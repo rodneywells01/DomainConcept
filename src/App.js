@@ -38,20 +38,52 @@ function App() {
 class Domain extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
+    console.log("I just got constructed!")
+    console.log(props)
+  }
 
-    };
+  render() {
+    return (
+      <div className="domain-card">
+        <div>{this.props.mydomain.name}</div>
+        <img src={this.props.mydomain.photo_url} />
+      
+      </div>
+    )
   }
 }
 
 class Domains extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      domains: []
+    }
+
+    // Get the domains! 
+    console.log("Sending an API call to get the domains.")
+    fetch('/domain').then(res => res.json()).then(data => {
+      console.log("Got the domains")
+      console.log(data);
+      this.setState({
+        domains: data.domains
+      })
+    });
+
+  }
   render() {
+    const domains = this.state.domains.map(function(domain){
+      return (
+          <Domain key={domain.name} mydomain={domain} />
+      )
+    });
+    console.log("In Render!")
+    console.log(domains)
+    console.log(this.state.domains)
     return (
       <div className="verticalbuffer">
-        <h3>Topics Here</h3>
-        <div>Example</div>
-        <div>Example</div>
-        <div>Example</div>
+        {domains}
       </div>
     )
   }
@@ -70,7 +102,7 @@ class MyApp extends React.Component {
       <div id="background">
         <h1>Planner</h1>
         <div id="greeting">
-          <h3>Hello, Rodney.</h3>
+          <h3>Hello, Rodney!</h3>
         </div>
         <Domains/>
       </div>
