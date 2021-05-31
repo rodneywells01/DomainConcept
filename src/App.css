@@ -76,6 +76,14 @@ html {
   max-height: 100px;
 }
 
+.domain-category {
+  border: 2px solid black;
+  display: block;
+  margin-bottom: 20px;
+  padding: 20px;
+  overflow-x: scroll;
+  white-space: nowrap;
+}
 
 
 

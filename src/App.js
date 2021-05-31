@@ -53,37 +53,72 @@ class Domain extends React.Component {
   }
 }
 
+class DomainCategory extends React.Component {
+  constructor(props) {
+    super(props);
+    console.log("Creating category for " + this.props.category);
+    console.log(props)
+  }
+
+  render() {
+    const domains = this.props.domains.map((domain) => {
+      return <Domain key={domain.name} mydomain={domain} />
+    })
+    return (
+      <div className="domain-category">
+        <div>{this.props.category}</div>
+        <div>{domains}</div>
+      </div>
+    )
+  }
+}
+
 class Domains extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      domains: []
+      domains: [],
+      domains_by_category: {}
     }
 
     // Get the domains! 
     console.log("Sending an API call to get the domains.")
-    fetch('/domain').then(res => res.json()).then(data => {
-      console.log("Got the domains")
+    // fetch('/domain').then(res => res.json()).then(data => {
+    //   console.log("Got the domains")
+    //   console.log(data);
+    //   this.setState({
+    //     domains: data.domains
+    //   })
+    // });
+
+    fetch('/domain/categories').then(res => res.json()).then(data => {
+      console.log("Got the domains!")
       console.log(data);
       this.setState({
-        domains: data.domains
-      })
+        domains_by_category: data.domains_by_category
+      });
     });
 
   }
   render() {
-    const domains = this.state.domains.map(function(domain){
+
+    // someList.map((item) => {
+    //   ...
+    // })
+    const categories = Object.keys(this.state.domains_by_category).map((category) => {
+      console.log(this.state.domains_by_category);
+      var domains = this.state.domains_by_category[category];
       return (
-          <Domain key={domain.name} mydomain={domain} />
+          <DomainCategory key={category} category={category} domains={domains} />
       )
     });
     console.log("In Render!")
-    console.log(domains)
-    console.log(this.state.domains)
+    // console.log(domains)
+    // console.log(this.state.domains)
     return (
       <div className="verticalbuffer">
-        {domains}
+        {categories}
       </div>
     )
   }

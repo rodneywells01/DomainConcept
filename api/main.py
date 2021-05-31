@@ -20,7 +20,6 @@ def hello():
     return {"message": "hello, world!"}
 
 
-
 @app.route('/domain', methods=['POST', 'GET'])    
 def handle_domain():
     if request.method == 'POST':
@@ -33,15 +32,47 @@ def handle_domain():
             "count": len(domains),
             "domains": [
                 {
-                    "name": domain.name,
-                    "category": domain.category,
-                    "photo_url": domain.photo_url,
-                    "description": domain.description,
+                    "name": domain.name.strip(),
+                    "category": domain.category.strip(),
+                    "photo_url": domain.photo_url.strip(),
+                    "description": domain.description.strip(),
                 } for domain in domains
             ]
         }
     else:
         raise Exception("Method was not get or post!")
+
+@app.route('/domain/categories', methods=["GET"])
+def get_domains_by_category():
+    if request.method != "GET":
+        raise Exception("Can't support a non GET method on this endpoint!")
+
+    # Querying docs - https://flask-sqlalchemy.palletsprojects.com/en/2.x/queries/
+    domains_in_category_order = DomainModel\
+        .query\
+        .order_by(DomainModel.category)\
+        .all()
+
+    domains_by_category = dict()
+    for domain in domains_in_category_order:
+        serializable_domain = {
+            "name": domain.name.strip(),
+            "category": domain.category.strip(),
+            "photo_url": domain.photo_url.strip(),
+            "description": domain.description.strip(),
+        }
+        if serializable_domain["category"] in domains_by_category:
+            domains_by_category[serializable_domain["category"]].append(serializable_domain)
+        else:
+            domains_by_category[serializable_domain["category"]] = [serializable_domain]
+
+
+
+
+    return {
+        "count": len(domains_by_category),
+        "domains_by_category": domains_by_category
+    }
 
 class DomainModel(db.Model):
     __tablename__ = 'domain'
@@ -61,6 +92,5 @@ class DomainModel(db.Model):
 
 
     def __repr__(self):
-        return f"<Domain {self.name}"
-
+        return f"<Domain {self.name} />"
 
